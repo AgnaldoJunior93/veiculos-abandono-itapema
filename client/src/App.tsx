@@ -7,7 +7,6 @@ import { useAuth } from "./lib/auth";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Vehicles from "@/pages/vehicles";
-import Campaigns from "@/pages/campaigns";
 import ApiAccess from "@/pages/api-access";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
@@ -37,7 +36,6 @@ function AppRouter() {
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/vehicles" component={Vehicles} />
-            <Route path="/campaigns" component={Campaigns} />
             <Route path="/api" component={ApiAccess} />
             <Route component={NotFound} />
           </Switch>

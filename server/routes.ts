@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertVehicleSchema, insertCampaignSchema, insertApiKeySchema, loginSchema } from "@shared/schema";
+import { insertVehicleSchema, insertApiKeySchema, loginSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -141,82 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Campaigns routes
-  app.get("/api/campaigns", async (req, res) => {
-    try {
-      const campaigns = await storage.getCampaigns();
-      res.json(campaigns);
-    } catch (error) {
-      console.error("Error fetching campaigns:", error);
-      res.status(500).json({ error: "Erro ao buscar campanhas" });
-    }
-  });
 
-  app.get("/api/campaigns/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const campaign = await storage.getCampaign(id);
-      
-      if (!campaign) {
-        return res.status(404).json({ error: "Campanha não encontrada" });
-      }
-      
-      res.json(campaign);
-    } catch (error) {
-      console.error("Error fetching campaign:", error);
-      res.status(500).json({ error: "Erro ao buscar campanha" });
-    }
-  });
-
-  app.post("/api/campaigns", async (req, res) => {
-    try {
-      const campaignData = insertCampaignSchema.parse(req.body);
-      const campaign = await storage.createCampaign(campaignData);
-      res.json(campaign);
-    } catch (error) {
-      console.error("Error creating campaign:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Dados inválidos", details: error.errors });
-      }
-      res.status(500).json({ error: "Erro ao criar campanha" });
-    }
-  });
-
-  app.put("/api/campaigns/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const updateData = insertCampaignSchema.partial().parse(req.body);
-      const campaign = await storage.updateCampaign(id, updateData);
-      
-      if (!campaign) {
-        return res.status(404).json({ error: "Campanha não encontrada" });
-      }
-      
-      res.json(campaign);
-    } catch (error) {
-      console.error("Error updating campaign:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Dados inválidos", details: error.errors });
-      }
-      res.status(500).json({ error: "Erro ao atualizar campanha" });
-    }
-  });
-
-  app.delete("/api/campaigns/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const deleted = await storage.deleteCampaign(id);
-      
-      if (!deleted) {
-        return res.status(404).json({ error: "Campanha não encontrada" });
-      }
-      
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting campaign:", error);
-      res.status(500).json({ error: "Erro ao excluir campanha" });
-    }
-  });
 
   // API Keys routes (protected)
   app.get("/api/api-keys", authenticate, async (req: any, res) => {

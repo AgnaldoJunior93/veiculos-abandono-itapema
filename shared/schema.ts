@@ -22,21 +22,7 @@ export const vehicles = pgTable("vehicles", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const campaigns = pgTable("campaigns", {
-  id: serial("id").primaryKey(),
-  nome: text("nome").notNull(),
-  descricao: text("descricao"),
-  area: text("area").notNull(),
-  dataInicio: date("data_inicio").notNull(),
-  dataFim: date("data_fim").notNull(),
-  status: text("status").notNull(), // "planejada" | "ativa" | "finalizada" | "cancelada"
-  metaEngajamento: integer("meta_engajamento"),
-  engajamentoAtual: integer("engajamento_atual").default(0),
-  remocoesPrevias: integer("remocoes_previas").default(0),
-  remocoesPosCampanha: integer("remocoes_pos_campanha").default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+
 
 export const apiKeys = pgTable("api_keys", {
   id: serial("id").primaryKey(),
@@ -53,12 +39,6 @@ export const insertUserSchema = createInsertSchema(users).omit({
 });
 
 export const insertVehicleSchema = createInsertSchema(vehicles).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertCampaignSchema = createInsertSchema(campaigns).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -82,8 +62,6 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertVehicle = z.infer<typeof insertVehicleSchema>;
 export type Vehicle = typeof vehicles.$inferSelect;
-export type InsertCampaign = z.infer<typeof insertCampaignSchema>;
-export type Campaign = typeof campaigns.$inferSelect;
 export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type LoginRequest = z.infer<typeof loginSchema>;
