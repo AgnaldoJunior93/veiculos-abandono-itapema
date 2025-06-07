@@ -77,7 +77,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Fora do Prazo</p>
-                <p className="text-3xl font-bold text-gov-red">{metrics?.overdueVehicles || 0}</p>
+                <p className="text-3xl font-bold text-gov-red">{(metrics as any)?.overdueVehicles || 0}</p>
               </div>
               <div className="bg-red-100 p-3 rounded-full">
                 <AlertTriangle className="h-6 w-6 text-gov-red" />
@@ -113,7 +113,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Taxa de Remoção</p>
-                <p className="text-3xl font-bold text-gov-amber">{metrics?.removalRate || 0}%</p>
+                <p className="text-3xl font-bold text-gov-amber">{(metrics as any)?.removalRate || 0}%</p>
               </div>
               <div className="bg-amber-100 p-3 rounded-full">
                 <TrendingUp className="h-6 w-6 text-gov-amber" />

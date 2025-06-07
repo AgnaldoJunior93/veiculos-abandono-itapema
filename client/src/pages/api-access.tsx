@@ -115,8 +115,7 @@ export default function ApiAccess() {
     { method: "POST", path: "/api/vehicles", description: "Cadastra um novo veículo" },
     { method: "PUT", path: "/api/vehicles/:id", description: "Atualiza um veículo existente" },
     { method: "DELETE", path: "/api/vehicles/:id", description: "Remove um veículo" },
-    { method: "GET", path: "/api/campaigns", description: "Lista campanhas ativas" },
-    { method: "POST", path: "/api/campaigns", description: "Cria uma nova campanha" },
+
     { method: "GET", path: "/api/metrics", description: "Retorna métricas do sistema" },
   ];
 
