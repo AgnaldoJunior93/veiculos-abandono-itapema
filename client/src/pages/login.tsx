@@ -95,11 +95,7 @@ export default function Login() {
             </form>
           </Form>
           
-          <div className="mt-4 text-sm text-gray-600">
-            <p className="mb-1"><strong>Usuários de teste:</strong></p>
-            <p>Admin: 12345 / admin</p>
-            <p>Padrão: 67890 / user</p>
-          </div>
+
         </CardContent>
       </Card>
     </div>
