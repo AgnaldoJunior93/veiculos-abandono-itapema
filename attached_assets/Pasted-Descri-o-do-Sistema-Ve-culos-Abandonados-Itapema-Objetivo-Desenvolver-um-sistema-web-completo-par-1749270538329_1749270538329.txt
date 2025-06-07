@@ -1,0 +1,111 @@
+Descrição do Sistema: Veículos Abandonados Itapema
+Objetivo:
+Desenvolver um sistema web completo para cadastro, listagem e gerenciamento de veículos abandonados em Itapema, com login restrito por matrícula/senha, controle de usuários e backend conectado a um banco de dados PostgreSQL. O sistema será publicado online gratuitamente e de forma permanente, usando Vercel para o frontend e Railway ou Neon para backend e banco.
+
+🧩 Tecnologias obrigatórias:
+Frontend: React + Vite + TailwindCSS
+
+Backend: Node.js + Express + TypeScript
+
+Banco de Dados: PostgreSQL (usando Drizzle ORM, Prisma ou similar)
+
+Hospedagem:
+
+Frontend: Vercel
+
+Backend: Railway ou Render
+
+Banco: Neon (se não usar o PostgreSQL do Railway)
+
+✅ Funcionalidades que já combinamos (implementar caso não existam):
+🔐 Login:
+Login com matrícula (ex: "12345") e senha.
+
+Tipo de usuário:
+
+Administrador (acesso total)
+
+Padrão (acesso restrito)
+
+Exibir nome e tipo do usuário após login.
+
+👤 Usuários:
+Tabela users com campos:
+
+id, matricula, password, name, type
+
+Inserção inicial de 2 usuários:
+
+Admin: 12345 / admin / João Silva
+
+Padrão: 67890 / user / Maria Santos
+
+🚗 Veículos:
+Tabela vehicles com campos:
+
+id, placa, endereco, dataNotificacao, prazoFinal, status, agente
+
+Ações:
+
+Criar, Editar, Listar
+
+Alterar status: aguardando remoção, removido ao pátio, removido pelo proprietário
+
+Destacar veículos fora do prazo (prazoFinal < data atual)
+
+📊 Dashboard:
+Contadores:
+
+Total de veículos
+
+Aguardando remoção
+
+Removidos
+
+Fora do prazo
+
+Filtros por status
+
+🌐 Exportação:
+Ao finalizar, preparar o projeto para:
+
+Frontend:
+
+Deploy em Vercel
+
+Executar npm run build no client
+
+Backend:
+
+Deploy no Railway
+
+Exportar .env com strings de conexão PostgreSQL e variáveis
+
+⚙️ Extras:
+Organizar as pastas:
+
+/client (frontend React)
+
+/server (backend Express + DB)
+
+Scripts úteis no package.json:
+
+json
+Copiar
+Editar
+"scripts": {
+  "dev": "concurrently \"npm run server\" \"npm run client\"",
+  "client": "cd client && npm run dev",
+  "server": "cd server && npm run dev"
+}
+Conexão PostgreSQL segura via variável DATABASE_URL
+
+Configurar .env exemplo com:
+
+env
+Copiar
+Editar
+DATABASE_URL=postgresql://user:password@host:port/db
+PORT=5000
+📎 Instruções finais:
+“Implemente todas as funcionalidades acima, verifique o que já existe, complete o que falta e configure tudo para funcionar com PostgreSQL e estar pronto para deploy gratuito. O objetivo é gerar um ZIP ou projeto final que possa ser publicado imediatamente. Use padrão REST nas rotas e organização limpa do código.”
