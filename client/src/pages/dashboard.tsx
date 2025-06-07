@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Car, AlertTriangle, Megaphone, TrendingUp, Activity, CheckCircle, Users } from "lucide-react";
+import { Car, AlertTriangle, TrendingUp, Activity, Users } from "lucide-react";
 
 export default function Dashboard() {
   const { data: metrics, isLoading: metricsLoading } = useQuery({
@@ -13,9 +13,7 @@ export default function Dashboard() {
     queryKey: ["/api/vehicles"],
   });
 
-  const { data: campaigns, isLoading: campaignsLoading } = useQuery({
-    queryKey: ["/api/campaigns"],
-  });
+
 
   if (metricsLoading) {
     return (
@@ -37,33 +35,21 @@ export default function Dashboard() {
     );
   }
 
-  const activeCampaigns = campaigns?.filter((c: any) => c.status === "ativa") || [];
-  const recentActivity = [
-    ...(vehicles?.slice(-3).map((v: any) => ({
-      type: "vehicle",
-      title: "Novo veículo cadastrado",
-      description: `Placa ${v.placa} - ${v.endereco}`,
-      time: "2h atrás",
-      icon: Car,
-      bgColor: "bg-blue-100",
-      iconColor: "text-gov-blue"
-    })) || []),
-    ...(activeCampaigns.slice(-2).map((c: any) => ({
-      type: "campaign",
-      title: "Campanha ativa",
-      description: `${c.nome} - ${c.area}`,
-      time: "1d atrás",
-      icon: Megaphone,
-      bgColor: "bg-amber-100", 
-      iconColor: "text-gov-amber"
-    })) || [])
-  ];
+  const recentActivity = (Array.isArray(vehicles) ? vehicles.slice(-5) : []).map((v: any) => ({
+    type: "vehicle",
+    title: "Novo veículo cadastrado",
+    description: `Placa ${v.placa} - ${v.endereco}`,
+    time: new Date(v.createdAt).toLocaleDateString('pt-BR'),
+    icon: Car,
+    bgColor: "bg-blue-100",
+    iconColor: "text-gov-blue"
+  }));
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gov-gray">Dashboard</h2>
-        <p className="text-gray-600">Visão geral do sistema de veículos abandonados e campanhas</p>
+        <p className="text-gray-600">Visão geral do sistema de veículos abandonados</p>
       </div>
 
       {/* Metrics Cards */}
@@ -73,7 +59,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total de Veículos</p>
-                <p className="text-3xl font-bold text-gov-gray">{metrics?.totalVehicles || 0}</p>
+                <p className="text-3xl font-bold text-gov-gray">{(metrics as any)?.totalVehicles || 0}</p>
               </div>
               <div className="bg-blue-100 p-3 rounded-full">
                 <Car className="h-6 w-6 text-gov-blue" />
@@ -108,16 +94,16 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Campanhas Ativas</p>
-                <p className="text-3xl font-bold text-gov-green">{metrics?.activeCampaigns || 0}</p>
+                <p className="text-sm font-medium text-gray-600">Agentes Ativos</p>
+                <p className="text-3xl font-bold text-gov-green">4</p>
               </div>
               <div className="bg-green-100 p-3 rounded-full">
-                <Megaphone className="h-6 w-6 text-gov-green" />
+                <Users className="h-6 w-6 text-gov-green" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-green-600 font-medium">+3</span>
-              <span className="text-gray-500 ml-1">novas este mês</span>
+              <span className="text-green-600 font-medium">100%</span>
+              <span className="text-gray-500 ml-1">disponibilidade</span>
             </div>
           </CardContent>
         </Card>
@@ -135,7 +121,7 @@ export default function Dashboard() {
             </div>
             <div className="mt-4 flex items-center text-sm">
               <span className="text-green-600 font-medium">+8%</span>
-              <span className="text-gray-500 ml-1">pós-campanhas</span>
+              <span className="text-gray-500 ml-1">vs mês anterior</span>
             </div>
           </CardContent>
         </Card>

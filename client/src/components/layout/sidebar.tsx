@@ -12,7 +12,6 @@ import {
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Veículos", href: "/vehicles", icon: Car },
-  { name: "Campanhas", href: "/campaigns", icon: Megaphone },
   { name: "Relatórios", href: "/reports", icon: FileText },
   { name: "API Access", href: "/api", icon: Code },
 ];
