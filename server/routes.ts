@@ -1,25 +1,29 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertVehicleSchema, insertApiKeySchema, loginSchema } from "@shared/schema";
+import { insertVehicleSchema, insertApiKeySchema } from "./schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+  const router = express.Router();
+
   // Authentication middleware
-  const authenticate = async (req: any, res: any, next: any) => {
+  const authenticate = async (req: any, res: Response, next: Function) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: "Token de acesso requerido" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ error: "Token de acesso requerido" });
+      return;
     }
-    
+
     const token = authHeader.substring(7);
     const apiKey = await storage.getApiKeyByKey(token);
-    
+
     if (!apiKey || !apiKey.active) {
-      return res.status(401).json({ error: "Token inválido" });
+      res.status(401).json({ error: "Token inválido" });
+      return;
     }
-    
+
     await storage.updateApiKeyLastUsed(token);
     const user = await storage.getUser(apiKey.userId);
     req.user = user;
@@ -27,179 +31,161 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Auth routes
-  app.post("/api/auth/login", async (req, res) => {
+  router.post("/auth/login", async (req: Request, res: Response) => {
     try {
-      const { matricula, password } = loginSchema.parse(req.body);
-      console.log("Login attempt:", { matricula, password });
-      
+      const { matricula, password } = req.body;
       const user = await storage.getUserByMatricula(matricula);
-      console.log("Found user:", user);
-      
-      if (!user) {
-        console.log("Password comparison:", { userPassword: undefined, providedPassword: password });
-        return res.status(401).json({ error: "Credenciais inválidas" });
+
+      if (!user || user.password !== password) {
+        res.status(401).json({ error: "Credenciais inválidas" });
+        return;
       }
-      
-      console.log("Password comparison:", { userPassword: user.password, providedPassword: password });
-      
-      if (user.password !== password) {
-        return res.status(401).json({ error: "Credenciais inválidas" });
-      }
-      
-      res.json({ 
-        user: { 
-          id: user.id, 
-          matricula: user.matricula, 
-          name: user.name, 
-          type: user.type 
-        } 
+
+      res.json({
+        user: {
+          id: user.id,
+          matricula: user.matricula,
+          name: user.name,
+          type: user.type,
+        },
       });
     } catch (error) {
-      console.error("Login error:", error);
       res.status(400).json({ error: "Dados inválidos" });
     }
   });
 
-  app.post("/api/auth/logout", (req, res) => {
+  router.post("/auth/logout", (_req: Request, res: Response) => {
     res.json({ success: true });
   });
 
   // Vehicles routes
-  app.get("/api/vehicles", async (req, res) => {
+  router.get("/vehicles", async (_req: Request, res: Response) => {
     try {
       const vehicles = await storage.getVehicles();
       res.json(vehicles);
-    } catch (error) {
-      console.error("Error fetching vehicles:", error);
+    } catch {
       res.status(500).json({ error: "Erro ao buscar veículos" });
     }
   });
 
-  app.get("/api/vehicles/:id", async (req, res) => {
+  router.get("/vehicles/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const vehicle = await storage.getVehicle(id);
-      
       if (!vehicle) {
-        return res.status(404).json({ error: "Veículo não encontrado" });
+        res.status(404).json({ error: "Veículo não encontrado" });
+        return;
       }
-      
       res.json(vehicle);
-    } catch (error) {
-      console.error("Error fetching vehicle:", error);
+    } catch {
       res.status(500).json({ error: "Erro ao buscar veículo" });
     }
   });
 
-  app.post("/api/vehicles", async (req, res) => {
+  router.post("/vehicles", async (req: Request, res: Response) => {
     try {
       const vehicleData = insertVehicleSchema.parse(req.body);
       const vehicle = await storage.createVehicle(vehicleData);
       res.json(vehicle);
     } catch (error) {
-      console.error("Error creating vehicle:", error);
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Dados inválidos", details: error.errors });
+        res.status(400).json({ error: "Dados inválidos", details: error.errors });
+        return;
       }
       res.status(500).json({ error: "Erro ao criar veículo" });
     }
   });
 
-  app.put("/api/vehicles/:id", async (req, res) => {
+  router.put("/vehicles/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const updateData = insertVehicleSchema.partial().parse(req.body);
       const vehicle = await storage.updateVehicle(id, updateData);
-      
+
       if (!vehicle) {
-        return res.status(404).json({ error: "Veículo não encontrado" });
+        res.status(404).json({ error: "Veículo não encontrado" });
+        return;
       }
-      
+
       res.json(vehicle);
     } catch (error) {
-      console.error("Error updating vehicle:", error);
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Dados inválidos", details: error.errors });
+        res.status(400).json({ error: "Dados inválidos", details: error.errors });
+        return;
       }
       res.status(500).json({ error: "Erro ao atualizar veículo" });
     }
   });
 
-  app.delete("/api/vehicles/:id", async (req, res) => {
+  router.delete("/vehicles/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteVehicle(id);
-      
+
       if (!deleted) {
-        return res.status(404).json({ error: "Veículo não encontrado" });
+        res.status(404).json({ error: "Veículo não encontrado" });
+        return;
       }
-      
+
       res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting vehicle:", error);
+    } catch {
       res.status(500).json({ error: "Erro ao excluir veículo" });
     }
   });
 
-
-
-  // API Keys routes (protected)
-  app.get("/api/api-keys", authenticate, async (req: any, res) => {
+  // API Keys
+  router.get("/api-keys", authenticate, async (req: any, res: Response) => {
     try {
       const apiKeys = await storage.getApiKeys(req.user.id);
-      // Don't return the actual key value for security
-      const safeKeys = apiKeys.map(key => ({
+      const safeKeys = apiKeys.map((key) => ({
         ...key,
-        key: key.key.substring(0, 12) + "..." + key.key.substring(key.key.length - 4)
+        key: key.key.substring(0, 12) + "..." + key.key.substring(key.key.length - 4),
       }));
       res.json(safeKeys);
-    } catch (error) {
-      console.error("Error fetching API keys:", error);
+    } catch {
       res.status(500).json({ error: "Erro ao buscar chaves de API" });
     }
   });
 
-  app.post("/api/api-keys", authenticate, async (req: any, res) => {
+  router.post("/api-keys", authenticate, async (req: any, res: Response) => {
     try {
       const keyData = insertApiKeySchema.parse(req.body);
       const apiKey = await storage.createApiKey({ ...keyData, userId: req.user.id });
       res.json(apiKey);
     } catch (error) {
-      console.error("Error creating API key:", error);
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Dados inválidos", details: error.errors });
+        res.status(400).json({ error: "Dados inválidos", details: error.errors });
+        return;
       }
       res.status(500).json({ error: "Erro ao criar chave de API" });
     }
   });
 
-  app.delete("/api/api-keys/:id", authenticate, async (req: any, res) => {
+  router.delete("/api-keys/:id", authenticate, async (req: any, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteApiKey(id);
-      
       if (!deleted) {
-        return res.status(404).json({ error: "Chave de API não encontrada" });
+        res.status(404).json({ error: "Chave de API não encontrada" });
+        return;
       }
-      
       res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting API key:", error);
+    } catch {
       res.status(500).json({ error: "Erro ao excluir chave de API" });
     }
   });
 
   // Metrics route
-  app.get("/api/metrics", async (req, res) => {
+  router.get("/metrics", async (_req: Request, res: Response) => {
     try {
       const metrics = await storage.getMetrics();
       res.json(metrics);
-    } catch (error) {
-      console.error("Error fetching metrics:", error);
+    } catch {
       res.status(500).json({ error: "Erro ao buscar métricas" });
     }
   });
 
+  app.use("/api", router);
   const httpServer = createServer(app);
   return httpServer;
 }

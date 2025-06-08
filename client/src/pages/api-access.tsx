@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertApiKeySchema, type InsertApiKey, type ApiKey } from "@shared/schema";
+import { insertApiKeySchema, type InsertApiKey, type ApiKey } from "../../shared/schema";
 import { Plus, Copy, Trash2, Code, Key, ExternalLink } from "lucide-react";
 
 export default function ApiAccess() {
@@ -41,7 +41,6 @@ export default function ApiAccess() {
         title: "Sucesso",
         description: "Chave de API criada com sucesso.",
       });
-      // Show the full key in a separate dialog/alert
       alert(`Nova chave criada: ${newApiKey.key}\n\nIMPORTANTE: Esta é a única vez que você verá a chave completa. Copie e guarde em local seguro.`);
       setIsModalOpen(false);
       form.reset();
@@ -62,7 +61,7 @@ export default function ApiAccess() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/api-keys"] });
       toast({
-        title: "Sucesso", 
+        title: "Sucesso",
         description: "Chave de API excluída com sucesso.",
       });
     },
@@ -115,14 +114,13 @@ export default function ApiAccess() {
     { method: "POST", path: "/api/vehicles", description: "Cadastra um novo veículo" },
     { method: "PUT", path: "/api/vehicles/:id", description: "Atualiza um veículo existente" },
     { method: "DELETE", path: "/api/vehicles/:id", description: "Remove um veículo" },
-
     { method: "GET", path: "/api/metrics", description: "Retorna métricas do sistema" },
   ];
 
   const getMethodBadge = (method: string) => {
     const colors = {
       GET: "bg-blue-100 text-blue-800",
-      POST: "bg-green-100 text-green-800", 
+      POST: "bg-green-100 text-green-800",
       PUT: "bg-amber-100 text-amber-800",
       DELETE: "bg-red-100 text-red-800",
     };
@@ -140,7 +138,6 @@ export default function ApiAccess() {
         <p className="text-gray-600">Integração com sistemas externos e acesso programático aos dados</p>
       </div>
 
-      {/* API Key Management */}
       <Card className="mb-6">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -175,18 +172,10 @@ export default function ApiAccess() {
                       )}
                     />
                     <div className="flex justify-end space-x-3">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => setIsModalOpen(false)}
-                      >
+                      <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
                         Cancelar
                       </Button>
-                      <Button 
-                        type="submit" 
-                        disabled={createMutation.isPending}
-                        className="bg-gov-blue hover:bg-gov-blue/90"
-                      >
+                      <Button type="submit" disabled={createMutation.isPending} className="bg-gov-blue hover:bg-gov-blue/90">
                         {createMutation.isPending ? "Gerando..." : "Gerar Chave"}
                       </Button>
                     </div>
@@ -216,19 +205,10 @@ export default function ApiAccess() {
                     </p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyToClipboard(apiKey.key)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => copyToClipboard(apiKey.key)}>
                       <Copy className="h-4 w-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(apiKey.id)}
-                      disabled={deleteMutation.isPending}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(apiKey.id)} disabled={deleteMutation.isPending}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -239,7 +219,6 @@ export default function ApiAccess() {
         </CardContent>
       </Card>
 
-      {/* API Documentation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -272,9 +251,9 @@ export default function ApiAccess() {
           <CardContent>
             <div className="bg-gray-900 rounded-lg p-4 text-sm mb-4">
               <pre className="text-green-400 overflow-x-auto">
-                <code>{`curl -X GET \\
-  'https://api.veiculos-itapema.gov.br/api/vehicles' \\
-  -H 'Authorization: Bearer sk_prod_your_key_here' \\
+                <code>{`curl -X GET \
+  'https://api.veiculos-itapema.gov.br/api/vehicles' \
+  -H 'Authorization: Bearer sk_prod_your_key_here' \
   -H 'Content-Type: application/json'`}</code>
               </pre>
             </div>

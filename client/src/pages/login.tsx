@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLogin } from "@/lib/auth";
-import { loginSchema, type LoginRequest } from "@shared/schema";
+import { loginSchema, type LoginRequest } from "../../shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,7 +94,6 @@ export default function Login() {
               </Button>
             </form>
           </Form>
-          
 
         </CardContent>
       </Card>

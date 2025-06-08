@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { insertVehicleSchema, type InsertVehicle, type Vehicle } from "@shared/schema";
+import { insertVehicleSchema, type InsertVehicle, type Vehicle } from "../../shared/schema"; // Corrigido o path
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -36,7 +36,7 @@ export default function VehicleModal({ isOpen, onClose, vehicle }: VehicleModalP
   const mutation = useMutation({
     mutationFn: async (data: InsertVehicle) => {
       if (isEditing) {
-        await apiRequest("PUT", `/api/vehicles/${vehicle.id}`, data);
+        await apiRequest("PUT", `/api/vehicles/${vehicle!.id}`, data);
       } else {
         await apiRequest("POST", "/api/vehicles", data);
       }
@@ -77,7 +77,7 @@ export default function VehicleModal({ isOpen, onClose, vehicle }: VehicleModalP
             {isEditing ? "Editar Veículo" : "Cadastrar Novo Veículo"}
           </DialogTitle>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -94,7 +94,7 @@ export default function VehicleModal({ isOpen, onClose, vehicle }: VehicleModalP
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="agente"
@@ -181,8 +181,8 @@ export default function VehicleModal({ isOpen, onClose, vehicle }: VehicleModalP
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancelar
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={mutation.isPending}
                 className="bg-gov-blue hover:bg-gov-blue/90"
               >
