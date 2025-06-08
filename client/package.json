@@ -14,11 +14,13 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.0",
     "@tanstack/react-query": "^5.80.6",
     "lucide-react": "^0.513.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.57.0",
-    "wouter": "^3.7.1"
+    "wouter": "^3.7.1",
+    "zod": "^3.25.56"
   }
 }
